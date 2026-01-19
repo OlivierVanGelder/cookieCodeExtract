@@ -1,0 +1,16 @@
+{
+  "name": "cookiecode-scraper",
+  "version": "1.0.0",
+  "description": "Scraper for CookieCode portal customer and website records, sends data to a webhook.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "scrape": "node src/index.js",
+    "pw:install": "playwright install --with-deps"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "playwright": "^1.47.2"
+  }
+}

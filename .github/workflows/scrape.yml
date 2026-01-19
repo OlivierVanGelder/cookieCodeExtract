@@ -1,0 +1,35 @@
+name: CookieCode scrape
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run scraper
+        env:
+          COOKIECODE_BASE_URL: https://portal.cookiecode.nl
+          COOKIECODE_EMAIL: ${{ secrets.COOKIECODE_EMAIL }}
+          COOKIECODE_PASSWORD: ${{ secrets.COOKIECODE_PASSWORD }}
+          PAGE_MAX: "9"
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          HEADLESS: "true"
+          BATCH_SIZE: "10000"
+        run: npm run scrape
