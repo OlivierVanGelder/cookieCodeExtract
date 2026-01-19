@@ -24,7 +24,7 @@ jobs:
           key: cookiecode-urls-v1
 
       - name: Install
-        run: npm ci
+        run: npm install
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
