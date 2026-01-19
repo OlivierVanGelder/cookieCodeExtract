@@ -17,8 +17,14 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Restore cached urls
+        uses: actions/cache@v4
+        with:
+          path: data/urls.json
+          key: cookiecode-urls-v1
+
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -28,15 +34,24 @@ jobs:
           COOKIECODE_BASE_URL: https://portal.cookiecode.nl
           COOKIECODE_EMAIL: ${{ secrets.COOKIECODE_EMAIL }}
           COOKIECODE_PASSWORD: ${{ secrets.COOKIECODE_PASSWORD }}
+
           PAGE_MAX: "9"
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
+          WEBHOOK_URL: https://rbmedia.app.n8n.cloud/webhook/a0c2cf3f-99c6-4e71-ab0a-dc694d04aff3
+
           HEADLESS: "true"
-          BATCH_SIZE: "10000"
+          SLOW_MO_MS: "0"
+
+          URLS_FILE: data/urls.json
+          REFRESH_URLS: "false"
         run: npm run scrape
+
       - name: Upload debug artifacts
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: debug
-            path: |
-                debug-customers-page1.png
+          name: debug
+          path: |
+            data/urls.json
+            debug-*.png
+            debug-*.html
