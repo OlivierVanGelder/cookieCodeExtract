@@ -115,7 +115,7 @@ async function main() {
         const html = await page.content().catch(() => "");
         await fs.writeFile(`debug-fail-website-${safeId}.html`, html, "utf8").catch(() => {});
       }
-      await page.waitForTimeout(120);
+      await page.waitForTimeout(2000);
     }
 
     const payload = {

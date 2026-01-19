@@ -73,11 +73,16 @@ export async function scrapeCustomerEdit({ page, url }) {
 
   const name = await readInputValue(page, 'input[name="name"]');
   const street = await readInputValue(page, 'input[name="street"]');
+  const housenumber = await readInputValue(page, 'input[name="housenumber"]');
   const postalcode = await readInputValue(page, 'input[name="postalcode"]');
+  const city = await readInputValue(page, 'input[name="city"]');
   const email = await readInputValue(page, 'input[name="email"]');
   const coc = await readInputValue(page, 'input[name="coc"]');
 
-  const country = await readText(page, '.select2-selection__rendered[id^="select2-countryId"]');
+  const country = await readText(
+    page,
+    '.select2-selection__rendered[id^="select2-countryId"]'
+  );
 
   return {
     type: "customer",
@@ -85,12 +90,15 @@ export async function scrapeCustomerEdit({ page, url }) {
     finalUrl: page.url(),
     name,
     street,
+    housenumber,
     postalcode,
+    city,
     country,
     email,
     coc
   };
 }
+
 
 export async function scrapeWebsiteEdit({ page, url }) {
   await page.goto(url, { waitUntil: "domcontentloaded" });
