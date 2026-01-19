@@ -1,15 +1,19 @@
 import { toAbsoluteUrl, uniqPush } from "./utils.js";
 
 export async function login({ page, baseUrl, email, password }) {
-  await page.goto(`${baseUrl}/login`, { waitUntil: "domcontentloaded" });
+  // Login zit op de root
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
 
-  // Als de portal andere name attributen gebruikt, pas dit aan
-  await page.fill('input[name="email"]', email);
+  // Juiste selectors volgens jouw HTML
+  await page.fill('input[name="emailaddress"]', email);
   await page.fill('input[name="password"]', password);
 
-  await page.click('button[type="submit"]');
+  // Klik op submit, zo breed mogelijk zodat het niet faalt bij kleine verschillen
+  await page.click('button[type="submit"], input[type="submit"], button:has-text("Login"), button:has-text("Inloggen")');
+
   await page.waitForLoadState("networkidle");
 }
+
 
 export async function collectEditUrls({ page, baseUrl, pageMax }) {
   const customerEditUrls = new Set();
