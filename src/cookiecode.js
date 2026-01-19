@@ -23,26 +23,40 @@ export async function collectEditUrls({ page, baseUrl, pageMax }) {
     const listUrl = `${baseUrl}/company/customers?search=&page=${p}`;
     await page.goto(listUrl, { waitUntil: "domcontentloaded" });
 
-    // Klant edit links
+    // Wacht iets langer op dynamische content
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForTimeout(500);
+
+    // Debug: op pagina 1 altijd screenshot als er niks staat
+    if (p === 1) {
+      await page.screenshot({ path: "debug-customers-page1.png", fullPage: true });
+    }
+
     const customerHrefs = await page.$$eval(
       'a[href^="/company/customer-edit/"]',
       (links) => links.map((a) => a.getAttribute("href")).filter(Boolean)
     );
 
-    // Website edit links
     const websiteHrefs = await page.$$eval(
       'a[href^="/company/website-edit/"]',
       (links) => links.map((a) => a.getAttribute("href")).filter(Boolean)
     );
 
-    uniqPush(customerEditUrls, customerHrefs.map((h) => toAbsoluteUrl(baseUrl, h)));
-    uniqPush(websiteEditUrls, websiteHrefs.map((h) => toAbsoluteUrl(baseUrl, h)));
+    // Log aantallen zodat je in Actions meteen ziet wat er gebeurt
+    console.log(`Pagina ${p}: customer links ${customerHrefs.length}, website links ${websiteHrefs.length}`);
+
+    for (const href of customerHrefs) customerEditUrls.add(new URL(href, baseUrl).toString());
+    for (const href of websiteHrefs) websiteEditUrls.add(new URL(href, baseUrl).toString());
   }
 
-  return {
-    customerEditUrls: Array.from(customerEditUrls),
-    websiteEditUrls: Array.from(websiteEditUrls)
-  };
+  const customers = Array.from(customerEditUrls);
+  const websites = Array.from(websiteEditUrls);
+
+  if (customers.length === 0 && websites.length === 0) {
+    throw new Error("Geen edit links gevonden. Zie debug-customers-page1.png voor wat de bot ziet.");
+  }
+
+  return { customerEditUrls: customers, websiteEditUrls: websites };
 }
 
 async function readInputValue(page, selector) {

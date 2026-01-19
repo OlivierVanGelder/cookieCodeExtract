@@ -20,7 +20,6 @@ jobs:
       - name: Install
         run: npm install
 
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
@@ -34,3 +33,10 @@ jobs:
           HEADLESS: "true"
           BATCH_SIZE: "10000"
         run: npm run scrape
+      - name: Upload debug artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+            name: debug
+            path: |
+                debug-customers-page1.png
